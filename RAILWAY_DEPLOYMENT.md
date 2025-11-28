@@ -42,7 +42,7 @@
 ### Крок 4: Отримайте URL
 1. Після деплою перейдіть у **Settings** → **Networking**
 2. Натисніть **Generate Domain**
-3. Скопіюйте URL (наприклад: `https://content-transcriber-backend-production.up.railway.app`)
+3. Скопіюйте URL (наприклад: `content-transcriber-backend-production.up.railway.app`)
 
 ---
 
