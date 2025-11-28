@@ -1,4 +1,4 @@
-# YouTube Transcriber & Chat App
+# Content Transcriber & Chat App
 
 A mobile-first web application to download, transcribe, and chat with YouTube videos using Groq API.
 
@@ -8,45 +8,27 @@ A mobile-first web application to download, transcribe, and chat with YouTube vi
 - **Mobile-First Design**: Optimized for mobile devices (PWA-ready).
 - **Dark Mode**: Premium dark aesthetic.
 
-## Project Structure
-- `backend/`: FastAPI Python server (handles downloading, splitting, transcribing).
-- `frontend/`: React Vite application (UI).
+## Architecture
+- **Frontend**: React + Vite (Deployed on **Vercel**)
+- **Backend**: FastAPI + Python (Deployed on **Railway**)
 
-## Prerequisites
-- **Docker**: For containerization and deployment.
-- **Node.js**: For frontend development.
-- **Groq API Key**: Required for transcription and chat.
-
-## Local Development
-
-### Backend
-1.  Navigate to `backend/`.
-2.  Create a `.env` file with your Groq API key:
-    ```
-    GROQ_API_KEY=your_key_here
-    ```
-3.  Build and run with Docker (recommended as it handles ffmpeg):
-    ```bash
-    docker build -t youtube-backend .
-    docker run -p 8000:8000 -e GROQ_API_KEY=your_key_here youtube-backend
-    ```
-    Or if you have Python and ffmpeg installed locally:
-    ```bash
-    pip install -r requirements.txt
-    uvicorn main:app --reload
-    ```
+## Development
 
 ### Frontend
-1.  Navigate to `frontend/`.
-2.  Install dependencies:
+1.  Install dependencies:
     ```bash
     npm install
     ```
-3.  Run the dev server:
+2.  Run the dev server:
     ```bash
     npm run dev
     ```
-4.  Open `http://localhost:5173` (or the port shown).
+3.  Open `http://localhost:5173`.
 
-## Deployment (Google Cloud Vertex / Cloud Run)
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
+## Deployment
+
+### Frontend (Vercel)
+The frontend is deployed on Vercel. It connects to the backend via the `VITE_API_URL` environment variable.
+
+### Backend (Railway)
+The backend is deployed on Railway. See `RAILWAY_DEPLOYMENT.md` for details.
