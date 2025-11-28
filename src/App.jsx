@@ -130,7 +130,6 @@ function App() {
     setTranscript('');
     setChatHistory([]);
     setIsChatOpen(false);
-    fetchHistory();
   };
 
   const handleChatSubmit = async (e) => {
