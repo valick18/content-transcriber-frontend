@@ -25,11 +25,20 @@ function App() {
     }
   }, []);
 
-  // Save to localStorage whenever a job completes
-  const saveToHistory = (jobData) => {
-    const newHistory = [jobData, ...history];
-    setHistory(newHistory);
-    localStorage.setItem('transcription_history', JSON.stringify(newHistory));
+  // Upsert to localStorage (update if exists, add if new)
+  const upsertHistory = (jobData) => {
+    setHistory(prev => {
+      const existingIdx = prev.findIndex(item => item.id === jobData.id);
+      let newHistory;
+      if (existingIdx >= 0) {
+        newHistory = [...prev];
+        newHistory[existingIdx] = { ...newHistory[existingIdx], ...jobData };
+      } else {
+        newHistory = [jobData, ...prev];
+      }
+      localStorage.setItem('transcription_history', JSON.stringify(newHistory));
+      return newHistory;
+    });
   };
 
   const deleteHistoryItem = (e, id) => {
@@ -50,18 +59,28 @@ function App() {
         try {
           const res = await axios.get(`${API_URL}/status/${jobId}`);
           setStatus(res.data.status);
+
+          // Update status in history while polling
+          upsertHistory({
+            id: jobId,
+            status: res.data.status
+          });
+
           if (res.data.status === 'done') {
             const resultRes = await axios.get(`${API_URL}/result/${jobId}`);
             setTranscript(resultRes.data.transcript);
-            // Save to localStorage history
-            saveToHistory({
+            // Final update to history
+            upsertHistory({
               id: jobId,
               status: 'done',
-              title: url || 'Uploaded File',
-              date: new Date().toLocaleDateString()
+              transcript: resultRes.data.transcript // Optional: save transcript if needed locally
             });
           } else if (res.data.status === 'error') {
             alert('Error processing video');
+            upsertHistory({
+              id: jobId,
+              status: 'error'
+            });
           }
         } catch (err) {
           console.error(err);
@@ -79,6 +98,13 @@ function App() {
     try {
       const res = await axios.post(`${API_URL}/process`, { url });
       setJobId(res.data.job_id);
+      // Save immediately
+      upsertHistory({
+        id: res.data.job_id,
+        status: 'queued',
+        title: url,
+        date: new Date().toLocaleDateString()
+      });
     } catch (err) {
       console.error(err);
       setStatus('error');
@@ -102,6 +128,13 @@ function App() {
         },
       });
       setJobId(res.data.job_id);
+      // Save immediately
+      upsertHistory({
+        id: res.data.job_id,
+        status: 'queued',
+        title: file.name, // Use filename as title
+        date: new Date().toLocaleDateString()
+      });
     } catch (err) {
       console.error(err);
       setStatus('error');
@@ -110,15 +143,18 @@ function App() {
   };
 
   const loadHistoryItem = async (item) => {
-    if (item.status !== 'done') return;
     setJobId(item.id);
-    setStatus('done');
+    setStatus(item.status);
     setView('result');
-    try {
-      const res = await axios.get(`${API_URL}/result/${item.id}`);
-      setTranscript(res.data.transcript);
-    } catch (err) {
-      console.error(err);
+
+    // If done, fetch transcript. If not done, the useEffect will pick it up via jobId
+    if (item.status === 'done') {
+      try {
+        const res = await axios.get(`${API_URL}/result/${item.id}`);
+        setTranscript(res.data.transcript);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
