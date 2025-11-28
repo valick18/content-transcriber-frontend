@@ -1,0 +1,21 @@
+{
+    "name": "ContentTranscriber",
+    "short_name": "ContentTranscriber",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0f172a",
+    "theme_color": "#0f172a",
+    "description": "Transcribe and Chat with Video Content",
+    "icons": [
+        {
+            "src": "https://cdn-icons-png.flaticon.com/512/1384/1384060.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "https://cdn-icons-png.flaticon.com/512/1384/1384060.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
